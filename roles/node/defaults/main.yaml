@@ -1,0 +1,22 @@
+---
+# General settings
+chain_binary_name: dymd
+node_user: dymension
+node_user_home: "/home/{{node_user}}"
+node_user_home: "/home/{{node_user}}"
+chain_home: "{{node_user_home}}/.dymension"
+chain_repository: https://github.com/dymensionxyz/dymension.git
+chain_repo_dir: "{{ node_user_home }}/chain-repo"
+chain_version: v3.0.0
+chain_bin: "{{ node_user_home }}/go/bin/{{chain_binary_name}}"
+chain_moniker: "{{inventory_hostname}}"
+node_service_name: "dymd"
+
+# Go configuration
+go_arch: "{{binary_arch_map[ansible_architecture]}}"
+go_version: '1.20'
+
+# Architecture mapping
+binary_arch_map:
+  aarch64: "linux-arm64"
+  x86_64: "linux-amd64"

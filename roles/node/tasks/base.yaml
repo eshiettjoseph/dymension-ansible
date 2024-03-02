@@ -1,0 +1,73 @@
+- name: Ensure user exists for chain
+  user:
+    name: "{{node_user}}"
+    append: true
+    groups: adm
+    shell: /bin/bash
+    comment: User for chain services
+
+- name: Remove golang apt package
+  ansible.builtin.apt:
+    name: golang
+    state: absent
+
+- name: Remove system Go files
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - /usr/bin/go
+    - /usr/lib/go
+
+- name: Check golang version
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    go version
+  register: go_current_version
+  ignore_errors: true
+
+- name: Extract golang
+  when: not go_version in go_current_version.stdout
+  unarchive:
+    src: "https://golang.org/dl/go{{go_version}}.{{go_arch}}.tar.gz"
+    dest: /usr/local
+    remote_src: yes
+  become: true
+
+- name: Check chain version
+  shell: "{{chain_bin}} version"
+  become_user: "{{node_user}}"
+  register: chain_current_version
+  ignore_errors: true
+
+- name: Clone chain repo
+  git: 
+    repo: "{{chain_repository}}"
+    dest: "{{chain_repo_dir}}"
+    version: "{{chain_version}}"
+    force: yes
+  become_user: "{{node_user}}"
+
+- name: Install chain
+  shell: |
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    make install
+  args:
+    chdir: "{{chain_repo_dir}}"
+  become_user: "{{node_user}}"
+
+# Initialize chain home
+- name: initialize chain
+  shell: |
+    cd $HOME
+    {{chain_bin}} init {{ chain_moniker }} --home {{chain_home}} --chain-id {{chain_id}}
+  become_user: "{{node_user}}"
+
+- name: Add chain bin from go/bin to .bashrc PATH
+  blockinfile:
+    dest: '{{ node_user_home }}/.bashrc'
+    block: |
+      export PATH="$PATH:{{ node_user_home }}/go/bin"
+    marker: '# {mark} ANSIBLE MANAGED BLOCK - CHAIN PATH'
+    insertbefore: EOF
+    create: yes
