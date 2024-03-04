@@ -11,6 +11,8 @@ chain_version: v3.0.0
 chain_bin: "{{ node_user_home }}/go/bin/{{chain_binary_name}}"
 chain_moniker: "{{inventory_hostname}}"
 node_service_name: "dymd"
+toml_cli_args: ""
+node_keyring: "test"
 
 # Go configuration
 go_arch: "{{binary_arch_map[ansible_architecture]}}"
