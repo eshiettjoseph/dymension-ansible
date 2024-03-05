@@ -3,7 +3,6 @@
 chain_binary_name: dymd
 node_user: dymension
 node_user_home: "/home/{{node_user}}"
-node_user_home: "/home/{{node_user}}"
 chain_home: "{{node_user_home}}/.dymension"
 chain_repository: https://github.com/dymensionxyz/dymension.git
 chain_repo_dir: "{{ node_user_home }}/chain-repo"
@@ -13,6 +12,11 @@ chain_moniker: "{{inventory_hostname}}"
 node_service_name: "dymd"
 toml_cli_args: ""
 node_keyring: "test"
+key_name: local-user
+token_amount: 1000000000000000000000000adym
+staking_amount: 670000000000000000000000adym
+chain_id: dymension_100-1
+chain_start: true
 
 # Go configuration
 go_arch: "{{binary_arch_map[ansible_architecture]}}"

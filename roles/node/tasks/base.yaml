@@ -1,3 +1,35 @@
+---
+- name: Upgrade the system
+  apt:
+    update_cache: true
+    upgrade: dist
+  register: apt_cache
+  retries: 50
+  until: apt_cache is success
+  
+- name: Install system required packages
+  apt:
+    pkg:
+      - python3
+      - python3-apt
+      - curl
+      - apt-transport-https
+      - software-properties-common
+      - wget
+      - git
+      - build-essential
+      - python3-openssl
+      - python-is-python3
+      - jq
+      - rsync
+
+- name: Install basic utils
+  apt:
+    state: present
+    pkg:
+      - curl
+      - htop
+
 - name: Ensure user exists for chain
   user:
     name: "{{node_user}}"
@@ -34,11 +66,7 @@
     remote_src: yes
   become: true
 
-- name: Check chain version
-  shell: "{{chain_bin}} version"
-  become_user: "{{node_user}}"
-  register: chain_current_version
-  ignore_errors: true
+
 
 - name: Clone chain repo
   git: 
@@ -55,6 +83,12 @@
   args:
     chdir: "{{chain_repo_dir}}"
   become_user: "{{node_user}}"
+
+- name: Check chain version
+  shell: "{{chain_bin}} version"
+  become_user: "{{node_user}}"
+  register: chain_current_version
+  ignore_errors: true
 
 # Initialize chain home
 - name: initialize chain

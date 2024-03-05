@@ -25,7 +25,7 @@
       - toml_cli
   become_user: '{{ node_user }}'
 
-- name: Configure {{ chain_home }}/config/config.toml
+- name: Configure config.toml
   shell: |
     {{ node_user_home }}/env/bin/toml set --toml-path {{ chain_home }}/config/config.toml {{ config_toml[count].key }} {{ config_toml[count].value }} {{ config_toml[count].toml_cli_args }}
   become_user: '{{ node_user }}'
@@ -34,7 +34,7 @@
   loop_control:
     index_var: count
 
-- name: Configure {{ chain_home }}/config/app.toml
+- name: Configure app.toml
   shell: |
     {{ node_user_home }}/env/bin/toml set --toml-path {{ chain_home }}/config/app.toml {{ app_toml[count].key }} {{ app_toml[count].value }} {{ app_toml[count].toml_cli_args }}
   become_user: '{{ node_user }}'
@@ -43,7 +43,7 @@
   loop_control:
     index_var: count
 
-- name: Configure {{ chain_home }}/config/client.toml
+- name: Configure client.toml
   shell: |
     {{ node_user_home }}/env/bin/toml set --toml-path {{ chain_home }}/config/client.toml {{ client_toml[count].key }} {{ client_toml[count].value }} {{ client_toml[count].toml_cli_args }}
   become_user: '{{ node_user }}'
@@ -122,7 +122,7 @@
     GENESIS_FILE: '{{chain_home}}/config/genesis.json'
     tmp: temp.json
 
-- mame: Setting misc params
+- name: Setting misc params
   shell: |
     jq '.app_state.crisis.constant_fee.denom = "adym"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
     jq -r '.app_state.gamm.params.pool_creation_fee[0].denom = "adym"' "$GENESIS_FILE" > "$tmp" && mv "$tmp" "$GENESIS_FILE"
@@ -161,7 +161,26 @@
     GENESIS_FILE: '{{chain_home}}/config/genesis.json'
     tmp: temp.json
 
+# Create node
+- name: Create node
+  shell: |
+    cd $HOME
+    {{chain_bin}} keys add {{key_name}} --keyring-backend {{node_keyring}}
+    {{chain_bin}} add-genesis-account "$({{chain_bin}} keys show {{key_name}} -a --keyring-backend {{node_keyring}})" {{token_amount}}
+  become_user: "{{node_user}}"
 
+- name: gentx node
+  shell: |
+    cd $HOME
+    {{chain_bin}} gentx {{key_name}} {{staking_amount}} --chain-id {{chain_id}} --keyring-backend {{node_keyring}} --home {{chain_home}}
+  become_user: "{{node_user}}"
+
+- name: collect gentx
+  shell: |
+    cd $HOME
+    PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+    {{chain_bin}} collect-gentxs --home {{ chain_home }}
+  become_user: "{{ node_user }}"
 
 
   
