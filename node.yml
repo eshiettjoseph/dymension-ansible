@@ -1,0 +1,55 @@
+---
+# Configure a chain node
+- hosts: node
+  become: true
+  roles:
+  - node
+  vars:
+    config_toml: 
+      - key: rpc.laddr
+        value: tcp://0.0.0.0:36657
+      - key: p2p.laddr
+        value: tcp://0.0.0.0:36656
+      - key: prometheus
+        toml_cli_args: ""
+        value: true
+      - key: cors_allowed_origins
+        value: ["*"]
+    app_toml:
+      - key: pruning
+        toml_cli_args: ""
+        value: default
+      - key: grpc.address
+        value: 0.0.0.0:8090
+      - key: grpc-web.address
+        value: 0.0.0.0:8091
+      - key: json-rpc.address
+        value: 0.0.0.0:9545
+      - key: json-ws.address
+        value: 0.0.0.0:9546
+      - key: api.enable
+        value: true
+      - key: api.address
+        value: 0.0.0.0:1318
+      - key: minimum-gas-prices
+        toml_cli_args: ""
+        value: 100000000adym
+      - key: telemetry.enabled
+        value: true
+      - key: prometheus-retention-time
+        toml_cli_args: "--to-int"
+        value: 31104000
+      - key: enabled-unsafe-cors
+        toml_cli_args: ""
+        value: true
+      
+    client_toml:
+      - key: chain-id
+        toml_cli_args: ""
+        value: dymension_100-1
+      - key: keyring-backend
+        toml_cli_args: ""
+        value: test
+      - key: node
+        toml_cli_args: ""
+        value: tcp://0.0.0.0:36657

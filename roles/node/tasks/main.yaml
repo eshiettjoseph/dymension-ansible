@@ -1,0 +1,9 @@
+---
+- name: base
+  include_tasks: base.yaml
+
+- name: config
+  include_tasks: config.yaml
+
+- name: setup systemd services
+  include_tasks: services.yaml
