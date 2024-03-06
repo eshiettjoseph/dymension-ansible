@@ -8,34 +8,44 @@
     config_toml: 
       - key: rpc.laddr
         value: tcp://0.0.0.0:36657
+        toml_cli_args: ""
       - key: p2p.laddr
         value: tcp://0.0.0.0:36656
+        toml_cli_args: ""
       - key: prometheus
         toml_cli_args: ""
         value: true
       - key: cors_allowed_origins
-        value: ["*"]
+        value: '["*"]'
+        toml_cli_args: ""
     app_toml:
       - key: pruning
         toml_cli_args: ""
         value: default
       - key: grpc.address
         value: 0.0.0.0:8090
+        toml_cli_args: ""
       - key: grpc-web.address
         value: 0.0.0.0:8091
+        toml_cli_args: ""
       - key: json-rpc.address
         value: 0.0.0.0:9545
+        toml_cli_args: ""
       - key: json-ws.address
         value: 0.0.0.0:9546
+        toml_cli_args: ""
       - key: api.enable
         value: true
+        toml_cli_args: ""
       - key: api.address
-        value: 0.0.0.0:1318
+        value: tcp://0.0.0.0:1318
+        toml_cli_args: ""
       - key: minimum-gas-prices
         toml_cli_args: ""
         value: 100000000adym
       - key: telemetry.enabled
         value: true
+        toml_cli_args: ""
       - key: prometheus-retention-time
         toml_cli_args: "--to-int"
         value: 31104000

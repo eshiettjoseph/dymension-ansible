@@ -6,7 +6,7 @@
   register: apt_cache
   retries: 50
   until: apt_cache is success
-  
+
 - name: Install system required packages
   apt:
     pkg:
@@ -66,8 +66,6 @@
     remote_src: yes
   become: true
 
-
-
 - name: Clone chain repo
   git: 
     repo: "{{chain_repository}}"
@@ -90,14 +88,24 @@
   register: chain_current_version
   ignore_errors: true
 
+- name: Check if genesis.json exists
+  stat:
+    path:  '{{chain_home}}/config/genesis.json'
+  register: genesis
+
 # Initialize chain home
 - name: initialize chain
+  when: not genesis.stat.exists
   shell: |
     cd $HOME
     {{chain_bin}} init {{ chain_moniker }} --home {{chain_home}} --chain-id {{chain_id}}
+    chown {{node_user}}:{{node_user}} {{chain_home}}/config/genesis.json
   become_user: "{{node_user}}"
 
+
+
 - name: Add chain bin from go/bin to .bashrc PATH
+  when: not genesis.stat.exists
   blockinfile:
     dest: '{{ node_user_home }}/.bashrc'
     block: |

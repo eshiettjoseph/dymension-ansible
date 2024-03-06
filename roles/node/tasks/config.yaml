@@ -161,21 +161,30 @@
     GENESIS_FILE: '{{chain_home}}/config/genesis.json'
     tmp: temp.json
 
+- name: Change genesis file permission
+  file:
+    path: '{{chain_home}}/config/genesis.json'
+    owner: "{{node_user}}"
+    group: "{{node_user}}"
+
 # Create node
 - name: Create node
+  when: not genesis.stat.exists
   shell: |
     cd $HOME
-    {{chain_bin}} keys add {{key_name}} --keyring-backend {{node_keyring}}
-    {{chain_bin}} add-genesis-account "$({{chain_bin}} keys show {{key_name}} -a --keyring-backend {{node_keyring}})" {{token_amount}}
+    {{chain_bin}} keys add {{key_name}} --keyring-backend {{node_keyring}} --home {{chain_home}}
+    {{chain_bin}} add-genesis-account "$({{chain_bin}} keys show {{key_name}} -a --keyring-backend {{node_keyring}})" {{token_amount}} --home {{chain_home}}
   become_user: "{{node_user}}"
 
 - name: gentx node
+  when: not genesis.stat.exists
   shell: |
     cd $HOME
     {{chain_bin}} gentx {{key_name}} {{staking_amount}} --chain-id {{chain_id}} --keyring-backend {{node_keyring}} --home {{chain_home}}
   become_user: "{{node_user}}"
 
 - name: collect gentx
+  when: not genesis.stat.exists
   shell: |
     cd $HOME
     PATH=$PATH:/usr/local/go/bin:$HOME/go/bin

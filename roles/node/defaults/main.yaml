@@ -8,11 +8,11 @@ chain_repository: https://github.com/dymensionxyz/dymension.git
 chain_repo_dir: "{{ node_user_home }}/chain-repo"
 chain_version: v3.0.0
 chain_bin: "{{ node_user_home }}/go/bin/{{chain_binary_name}}"
-chain_moniker: "{{inventory_hostname}}"
+chain_moniker: "local"
 node_service_name: "dymd"
 toml_cli_args: ""
 node_keyring: "test"
-key_name: local-user
+key_name: "local-user"
 token_amount: 1000000000000000000000000adym
 staking_amount: 670000000000000000000000adym
 chain_id: dymension_100-1
