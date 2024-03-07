@@ -9,3 +9,4 @@ This repository contains an ansible role and playbook set up to deploy a simple 
   ![Successfully deployed](images/successfully_deployed.png)
 - `journalctl -u dymd.service` to check logs.
 
+
